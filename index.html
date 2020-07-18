@@ -2,24 +2,24 @@
 <html>
   <head>
     <script src="/socket.io/socket.io.js"></script>
-    <!--<script src="/client.js"></script>-->
   </head>
   <body>
     <h2>REQUESTS</h2>
     <ul id="requestList"></ul>
-    <input id="letterField" autocomplete="off" /><button id="sendButton">Send</button>
+    <input id="subjectField" autocomplete="off"><input id="letterField" autocomplete="off" /><button id="sendButton">Send</button>
     <h2>YOUR REQUESTS</h2>
     <ul id="yourRequests"></ul>
     <script>
         var socket = io();
         var sendButton = document.getElementById("sendButton");
         var letterField = document.getElementById("letterField");
+        var subjectField = document.getElementById("subjectField");
         var initials = prompt("Enter your initials:");
-        var userId = '_' + Math.random().toString(36).substr(2, 9);
+        //var userId = '_' + Math.random().toString(36).substr(2, 9);
+        var userId = "1";
 
         sendButton.onclick = () => {
-            let letterId = '_' + Math.random().toString(36).substr(2, 9);
-            socket.emit("sendLetter", userId, letterId, initials, letterField.value);
+            socket.emit("sendLetter", userId, initials, subjectField.value, letterField.value);
         }
 
         socket.on("refreshLists", (letterRequests) => {
@@ -28,6 +28,7 @@
             requestList.innerHTML = "";
             yourRequests.innerHTML = "";
             letterField.value = "";
+            subjectField.value = "";
             for (let i = 0; i < letterRequests.length; i++) {
                 let currLetter = letterRequests[i];
                 let li = document.createElement("li");
@@ -35,18 +36,19 @@
                 let replyButton = document.createElement("button");
                 replyButton.innerHTML = "Reply";
                 replyButton.onclick = () => {
+                    let replySubject = prompt("What's ur subject?");
                     let replyBody = prompt("What's ur reply?");
-                    socket.emit("replyLetter", userId, currLetter.letterId, replyBody, initials);
+                    socket.emit("replyLetter", currLetter.letterId, userId, initials, replySubject, replyBody);
                 };
                 li.appendChild(replyButton);
                 if (currLetter.userIds.includes(userId)) {
                     yourRequests.appendChild(li);
-                    for (let j = 0; j < currLetter.replies.length; j++) {
+                    /*for (let j = 0; j < currLetter.replies.length; j++) {
                         let currReply = currLetter.replies[j];
                         let replyLi = document.createElement("li");
                         replyLi.appendChild(document.createTextNode(currReply.initials + " : " + currReply.body));
                         yourRequests.appendChild(replyLi);
-                    }
+                    }*/
                 } else {
                     requestList.appendChild(li);
                 }
