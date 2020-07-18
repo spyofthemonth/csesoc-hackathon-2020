@@ -87,7 +87,9 @@ io.on('connection', (socket) => {
     } else {
       thread.push(letterRequests.find((element) => element.letterId == letterId));
     }
-    thread = thread.concat(thread[0].replies[userId]);
+    if (thread[0].replies[userId] != undefined) {
+      thread = thread.concat(thread[0].replies[userId]);
+    }
     socket.emit("receiveThread", thread);
   });
 });
