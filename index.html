@@ -1,4 +1,58 @@
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
-</script>
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <!--<script src="/client.js"></script>-->
+  </head>
+  <body>
+    <h2>REQUESTS</h2>
+    <ul id="requestList"></ul>
+    <input id="letterField" autocomplete="off" /><button id="sendButton">Send</button>
+    <h2>YOUR REQUESTS</h2>
+    <ul id="yourRequests"></ul>
+    <script>
+        var socket = io();
+        var sendButton = document.getElementById("sendButton");
+        var letterField = document.getElementById("letterField");
+        var initials = prompt("Enter your initials:");
+        var userId = '_' + Math.random().toString(36).substr(2, 9);
+
+        sendButton.onclick = () => {
+            let letterId = '_' + Math.random().toString(36).substr(2, 9);
+            socket.emit("sendLetter", userId, letterId, initials, letterField.value);
+        }
+
+        socket.on("refreshLists", (letterRequests) => {
+            let requestList = document.getElementById("requestList");
+            let yourRequests = document.getElementById("yourRequests");
+            requestList.innerHTML = "";
+            yourRequests.innerHTML = "";
+            letterField.value = "";
+            for (let i = 0; i < letterRequests.length; i++) {
+                let currLetter = letterRequests[i];
+                let li = document.createElement("li");
+                li.appendChild(document.createTextNode(currLetter.initials + " : " + currLetter.body));
+                let replyButton = document.createElement("button");
+                replyButton.innerHTML = "Reply";
+                replyButton.onclick = () => {
+                    let replyBody = prompt("What's ur reply?");
+                    socket.emit("replyLetter", userId, currLetter.letterId, replyBody, initials);
+                };
+                li.appendChild(replyButton);
+                if (currLetter.userIds.includes(userId)) {
+                    yourRequests.appendChild(li);
+                    for (let j = 0; j < currLetter.replies.length; j++) {
+                        let currReply = currLetter.replies[j];
+                        let replyLi = document.createElement("li");
+                        replyLi.appendChild(document.createTextNode(currReply.initials + " : " + currReply.body));
+                        yourRequests.appendChild(replyLi);
+                    }
+                } else {
+                    requestList.appendChild(li);
+                }
+                
+            }
+        });
+    </script>
+  </body>
+</html>
