@@ -15,8 +15,7 @@
         var letterField = document.getElementById("letterField");
         var subjectField = document.getElementById("subjectField");
         var initials = prompt("Enter your initials:");
-        //var userId = '_' + Math.random().toString(36).substr(2, 9);
-        var userId = "1";
+        var userId = '_' + Math.random().toString(36).substr(2, 9);
 
         sendButton.onclick = () => {
             socket.emit("sendLetter", userId, initials, subjectField.value, letterField.value);

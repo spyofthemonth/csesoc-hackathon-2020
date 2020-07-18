@@ -70,6 +70,11 @@ io.on('connection', (socket) => {
     //io.emit("refreshLists", letterRequests);
   });
 
+  socket.on("getUserId", () => {
+    let userId = '_' + Math.random().toString(36).substr(2, 9);
+    socket.emit("receiveUserId", userId);
+  });
+
   socket.on("getRequests", () => {
     socket.emit("receiveRequests", letterRequests);
   });
