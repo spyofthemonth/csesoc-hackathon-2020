@@ -19,7 +19,9 @@ io.on('connection', (socket) => {
   socket.on("sendLetter", (userId, initials, subject, body) => {
     console.log("sent letter:" + body);
     let letterId = '_' + Math.random().toString(36).substr(2, 9);
-    let currDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    let currDate = new Date().toLocaleString();
+    currDate = currDate.replace(/(.*)\D\d+/, '$1');
+    console.log(currDate);
     let letterObj = {
       dateSent: currDate,
       userIds: [userId],
@@ -35,14 +37,15 @@ io.on('connection', (socket) => {
     } else {
       requestsByUser[userId] = [letterObj];
     }
-    io.emit("refreshLists", letterRequests);
+    //io.emit("refreshLists", letterRequests);
   });
 
   socket.on("replyLetter", (requestId, userId, initials, replySubject, replyBody) => {
     console.log("reply to letter:" + requestId);
     let request = letterRequests.find((element) => element.letterId == requestId);
     let replyId = '_' + Math.random().toString(36).substr(2, 9);
-    let currDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    let currDate = new Date().toLocaleString();
+    currDate = currDate.replace(/(.*)\D\d+/, '$1');
     request.userIds.push(userId);
     let replyObj = {
       dateSent: currDate,
@@ -64,7 +67,7 @@ io.on('connection', (socket) => {
     } else {
       repliesByUser[userId] = [replyObj];
     }
-    io.emit("refreshLists", letterRequests);
+    //io.emit("refreshLists", letterRequests);
   });
 
   socket.on("getRequests", () => {
