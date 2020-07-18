@@ -1,11 +1,15 @@
-const express = require('express')
-const app = express();
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.sendFile(__dirname + '/index.html');
 });
 
-app.listen(8000, () => {
-  console.log('Example app listening on port 8000!')
+io.on('connection', (socket) => {
+  console.log('a user connected');
 });
 
+http.listen(8000, () => {
+  console.log('listening on *:8000');
+});
