@@ -46,7 +46,9 @@ io.on('connection', (socket) => {
     let replyId = '_' + Math.random().toString(36).substr(2, 9);
     let currDate = new Date().toLocaleString();
     currDate = currDate.replace(/(.*)\D\d+/, '$1');
-    request.userIds.push(userId);
+    if (!request.userIds.includes(userId)) {
+      request.userIds.push(userId);
+    }
     let replyObj = {
       dateSent: currDate,
       requestId: requestId,
@@ -62,6 +64,8 @@ io.on('connection', (socket) => {
     } else {
       request.replies[userId] = [replyObj];
     }
+    console.log("IN replyLetter");
+    console.log(request.replies);
     if (userId in repliesByUser) {
       repliesByUser[userId].push(replyObj);
     } else {
@@ -95,9 +99,14 @@ io.on('connection', (socket) => {
     } else {
       thread.push(letterRequests.find((element) => element.letterId == letterId));
     }
-    if (thread[0].replies[userId] != undefined) {
-      thread = thread.concat(thread[0].replies[userId]);
+    for (let i = 0; i < thread[0].userIds.length; i++) {
+      let foo = thread[0].userIds[i];
+      console.log(thread[0].replies[foo]);
+      if (thread[0].replies[foo] != undefined) {
+        thread = thread.concat(thread[0].replies[foo]);
+      }
     }
+
     socket.emit("receiveThread", thread);
   });
 });
