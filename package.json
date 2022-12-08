@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/spyofthemonth/csesoc-hackathon-2020#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "socket.io": "^2.3.0"
   }
 }
